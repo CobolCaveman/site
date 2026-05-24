@@ -30,6 +30,13 @@ else
   ESBUILD_ARCH := x64
 endif
 
+# Hugo ships ONE universal binary for macOS (darwin-universal); Linux is per-arch.
+ifeq ($(UNAME_S),Darwin)
+  HUGO_SUFFIX := darwin-universal
+else
+  HUGO_SUFFIX := linux-$(HUGO_ARCH)
+endif
+
 HUGO      := ./bin/hugo
 TAILWIND  := ./bin/tailwindcss
 ESBUILD   := ./bin/esbuild
@@ -49,9 +56,9 @@ setup-hugo:
 	@if [ ! -f $(HUGO) ]; then \
 	  echo "→ Downloading Hugo $(HUGO_VERSION)..."; \
 	  curl -fsSL \
-	    "https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_extended_$(HUGO_VERSION)_$(HUGO_PLATFORM)-$(HUGO_ARCH).tar.gz" \
-	    | tar -xz -C bin hugo; \
-	  echo "✓ Hugo ready"; \
+	    "https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_extended_$(HUGO_VERSION)_$(HUGO_SUFFIX).tar.gz" \
+	    -o /tmp/hugo.tar.gz && tar -xzf /tmp/hugo.tar.gz -C bin hugo && rm -f /tmp/hugo.tar.gz; \
+	  test -f $(HUGO) && echo "✓ Hugo ready" || { echo "✗ Hugo download failed"; exit 1; }; \
 	else \
 	  echo "✓ Hugo already present"; \
 	fi
