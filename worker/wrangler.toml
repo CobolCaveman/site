@@ -1,0 +1,14 @@
+name              = "cobolcaveman-worker"
+main              = "dist/index.js"
+compatibility_date = "2025-01-01"
+
+# Routes: serves /api/* on your domain.
+# Ensure api.cobolcaveman.com has a CNAME → your workers.dev subdomain
+# in your Cloudflare DNS dashboard (proxied).
+[[routes]]
+pattern   = "api.cobolcaveman.com/api/*"
+zone_name = "cobolcaveman.com"
+
+# YOUTUBE_API_KEY is set as a secret, not here.
+# Run: echo $YOUTUBE_API_KEY | wrangler secret put YOUTUBE_API_KEY
+# (CI does this automatically via deploy.yml)

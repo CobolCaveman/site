@@ -1,0 +1,169 @@
+{{ define "main" }}
+
+<!-- ─── HERO ──────────────────────────────────────────────────────────────── -->
+<header class="hero">
+  <div class="grain"></div>
+
+  <div class="hero-inner">
+    <!-- Cave painting figure -->
+    <div class="cave-art" aria-hidden="true">
+      <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" fill="none"
+           stroke="#f97316" stroke-linecap="round" stroke-linejoin="round">
+        <!-- head -->
+        <circle cx="60" cy="18" r="14" stroke-width="3.5"/>
+        <!-- body -->
+        <line x1="60" y1="32" x2="60" y2="82" stroke-width="3.5"/>
+        <!-- left arm -->
+        <line x1="60" y1="48" x2="26" y2="36" stroke-width="3.5"/>
+        <!-- right arm + club -->
+        <line x1="60" y1="48" x2="92" y2="32" stroke-width="3.5"/>
+        <line x1="92" y1="32" x2="106" y2="12" stroke-width="6"/>
+        <ellipse cx="106" cy="10" rx="7" ry="5" stroke-width="3" fill="none"/>
+        <!-- left leg -->
+        <line x1="60" y1="82" x2="36" y2="120" stroke-width="3.5"/>
+        <!-- right leg -->
+        <line x1="60" y1="82" x2="84" y2="120" stroke-width="3.5"/>
+        <!-- feet -->
+        <line x1="36" y1="120" x2="22" y2="124" stroke-width="3"/>
+        <line x1="84" y1="120" x2="98" y2="124" stroke-width="3"/>
+      </svg>
+    </div>
+
+    <div class="hero-text">
+      <p class="hero-eyebrow">// PRIMITIVE ENGINEER //</p>
+      <h1 class="hero-name">COBOL<br>CAVEMAN</h1>
+      <p class="hero-tagline">{{ .Site.Params.description }}</p>
+
+      <!-- Social links -->
+      <nav class="hero-links" aria-label="Social links">
+        <a href="{{ .Site.Params.github }}"  target="_blank" rel="noopener" class="social-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.031 1.531 1.031.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844a9.59 9.59 0 012.504.337c1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.579.688.481C19.138 20.2 22 16.447 22 12.021 22 6.484 17.522 2 12 2z"/></svg>
+          GitHub
+        </a>
+        <a href="{{ .Site.Params.devto }}"   target="_blank" rel="noopener" class="social-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.826 10.083a.784.784 0 00-.468-.175h-.701v4.198h.701a.786.786 0 00.469-.175c.155-.117.233-.292.233-.525v-2.8c.001-.233-.079-.408-.234-.523zM19.236 3H4.764C3.791 3 3.002 3.787 3 4.76v14.48C3.002 20.212 3.791 21 4.764 21h14.473c.973 0 1.762-.788 1.763-1.76V4.76A1.762 1.762 0 0019.236 3zm-9.141 9.747c0 1.154-.768 2.253-2.253 2.253H6.204V9h1.638c1.486 0 2.254 1.099 2.254 2.254v1.493zm4.176 1.101c0 .621-.487 1.151-1.109 1.151h-2.42V9h2.42c.621 0 1.109.531 1.109 1.152v3.696zm2.559-3.696h-1.46v1.109h1.46v1.108h-1.46v1.479h-1.108V9h2.568v1.152z"/></svg>
+          Dev.to
+        </a>
+        <a href="{{ .Site.Params.youtube }}" target="_blank" rel="noopener" class="social-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube
+        </a>
+        <a href="{{ .Site.Params.x }}"       target="_blank" rel="noopener" class="social-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X / Twitter
+        </a>
+        <a href="mailto:{{ .Site.Params.email }}" class="social-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm0 2v.511l-8 6.223-8-6.222V6h16zM4 18V9.044l7.386 5.745a.994.994 0 001.228 0L20 9.044 20.002 18H4z"/></svg>
+          Email
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Jagged rock bottom edge -->
+  <div class="rock-edge" aria-hidden="true">
+    <svg viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,16 L40,4 L80,22 L130,8 L180,28 L230,6 L280,20 L320,10 L360,30 L410,4 L460,18 L510,32 L555,8 L600,24 L648,12 L695,30 L740,6 L790,22 L840,10 L885,28 L932,4 L975,20 L1020,34 L1070,8 L1115,26 L1160,14 L1210,32 L1255,6 L1300,22 L1345,12 L1395,30 L1440,10 L1440,48 L0,48 Z" fill="#0a0908"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ─── GITHUB ─────────────────────────────────────────────────────────────── -->
+<section class="section" id="github-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-rune" aria-hidden="true">⛏</span>
+      <h2 class="section-title">RECENT HUNTS</h2>
+      <span class="section-sub">github.com/CobolCaveman</span>
+    </div>
+    <div class="cards-grid" id="github-cards">
+      <!-- 6 skeleton cards -->
+      {{ range seq 6 }}
+      <div class="card skeleton-card" aria-hidden="true">
+        <div class="sk sk-title"></div>
+        <div class="sk sk-text"></div>
+        <div class="sk sk-text sk-short"></div>
+        <div class="sk sk-footer"></div>
+      </div>
+      {{ end }}
+    </div>
+    <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener" class="see-all">
+      SEE ALL KILLS →
+    </a>
+  </div>
+
+  <div class="rock-edge" aria-hidden="true">
+    <svg viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,30 L45,10 L90,36 L140,14 L190,38 L235,10 L285,26 L330,8 L375,32 L420,12 L465,28 L515,6 L560,22 L605,36 L650,14 L700,30 L745,8 L790,24 L840,38 L885,12 L930,28 L975,10 L1020,34 L1065,16 L1110,36 L1155,8 L1200,24 L1250,38 L1295,12 L1340,30 L1385,10 L1440,26 L1440,48 L0,48 Z" fill="#111110"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─── DEV.TO ──────────────────────────────────────────────────────────────── -->
+<section class="section section-alt" id="devto-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-rune" aria-hidden="true">🪨</span>
+      <h2 class="section-title">CAVE WRITINGS</h2>
+      <span class="section-sub">dev.to/cobolcaveman</span>
+    </div>
+    <div class="cards-grid" id="devto-cards">
+      {{ range seq 6 }}
+      <div class="card skeleton-card" aria-hidden="true">
+        <div class="sk sk-cover"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-text sk-short"></div>
+        <div class="sk sk-footer"></div>
+      </div>
+      {{ end }}
+    </div>
+    <a href="{{ .Site.Params.devto }}" target="_blank" rel="noopener" class="see-all">
+      READ ALL SCROLLS →
+    </a>
+  </div>
+
+  <div class="rock-edge" aria-hidden="true">
+    <svg viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,20 L48,6 L96,28 L144,10 L192,34 L240,8 L288,24 L336,12 L384,36 L432,8 L480,22 L528,38 L576,10 L624,28 L672,14 L720,32 L768,6 L816,26 L864,40 L912,14 L960,30 L1008,8 L1056,36 L1104,16 L1152,34 L1200,10 L1248,28 L1296,40 L1344,16 L1392,34 L1440,12 L1440,48 L0,48 Z" fill="#0a0908"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─── YOUTUBE ────────────────────────────────────────────────────────────── -->
+<section class="section" id="youtube-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-rune" aria-hidden="true">🔥</span>
+      <h2 class="section-title">FIRE STORIES</h2>
+      <span class="section-sub">youtube.com/@CobolCaveman</span>
+    </div>
+    <div class="cards-grid cards-grid--video" id="youtube-cards">
+      {{ range seq 4 }}
+      <div class="card skeleton-card" aria-hidden="true">
+        <div class="sk sk-video-thumb"></div>
+        <div class="sk sk-title"></div>
+        <div class="sk sk-footer"></div>
+      </div>
+      {{ end }}
+    </div>
+    <a href="{{ .Site.Params.youtube }}" target="_blank" rel="noopener" class="see-all">
+      WATCH ALL TALES →
+    </a>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="grain"></div>
+  <div class="footer-inner">
+    <p class="footer-name">COBOLCAVEMAN</p>
+    <p class="footer-sub">
+      <a href="mailto:{{ .Site.Params.email }}">{{ .Site.Params.email }}</a>
+    </p>
+    <p class="footer-copy">
+      Primitive code. Modern problems. · {{ now.Year }}
+    </p>
+  </div>
+</footer>
+
+{{ end }}

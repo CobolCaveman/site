@@ -1,0 +1,17 @@
+baseURL      = "https://cobolcaveman.com/"
+languageCode = "en-us"
+title        = "CobolCaveman"
+
+[build]
+  writeStats = true
+
+[params]
+  description = "Banging rocks together since the dawn of COBOL."
+  workerURL   = "https://api.cobolcaveman.com"
+
+  # Social links
+  github  = "https://github.com/CobolCaveman"
+  devto   = "https://dev.to/cobolcaveman"
+  youtube = "https://www.youtube.com/@CobolCaveman"
+  x       = "https://x.com/CobolCaveman"
+  email   = "caveman@cobolcaveman.com"

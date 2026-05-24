@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Downloaded toolchain binaries — run `make setup` to fetch for your platform
+/bin/
+
+# Hugo build output + asset cache
+/site/public/
+/site/resources/
+
+# Tailwind-generated CSS
+/site/static/css/main.css
+
+# Compiled Cloudflare Worker bundle
+/worker/dist/
+
+# Node (not used locally, here as a guard)
+node_modules/
