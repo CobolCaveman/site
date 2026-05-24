@@ -1,5 +1,44 @@
 @import "tailwindcss";
 
+/* ── Self-hosted fonts (OFL — see /fonts/*.txt) ─────────────────────────────────
+   Replaces the render-blocking Google Fonts request. font-display: swap paints
+   in the fallback first, then swaps in (avoids invisible-text / FOIT). */
+@font-face {
+  font-family: 'Bebas Neue';
+  font-style:  normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/bebas-neue-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style:  normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style:  normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style:  normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style:  italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-italic.woff2') format('woff2');
+}
+
 /* ── Design tokens ──────────────────────────────────────────────────────────── */
 @theme {
   --color-cave:    #0a0908;
@@ -22,9 +61,7 @@
 /* ── Base ───────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background-color: var(--color-cave);
@@ -36,258 +73,286 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
 
-/* ── Grain overlay ──────────────────────────────────────────────────────────── */
-.grain {
+/* ── Skip link (keyboard a11y) ──────────────────────────────────────────────── */
+.skip-link {
   position: absolute;
-  inset: -100%;
-  width:  300%;
-  height: 300%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:          0.035;
-  pointer-events:   none;
-  z-index:          10;
-  animation:        grain 12s steps(8) infinite;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 1rem;
+  top:  1rem;
+  padding: 0.6rem 1rem;
+  background: var(--color-pitch);
+  color: var(--color-fire);
+  border: 1px solid var(--color-fire);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
 }
 
-@keyframes grain {
-  0%   { transform: translate(0,     0); }
-  12%  { transform: translate(-4%,  -8%); }
-  25%  { transform: translate(-12%,  4%); }
-  37%  { transform: translate( 6%,  -20%); }
-  50%  { transform: translate(-3%,   18%); }
-  62%  { transform: translate(-14%,  8%); }
-  75%  { transform: translate( 12%,  0%); }
-  87%  { transform: translate( 0%,   12%); }
-  100% { transform: translate(0,     0); }
-}
-
-/* ── Hero ───────────────────────────────────────────────────────────────────── */
-.hero {
-  position:   relative;
-  min-height: 100svh;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a1008 0%, var(--color-cave) 70%);
-  display:    flex;
+/* ── Split shell ────────────────────────────────────────────────────────────── */
+.split {
+  display:        flex;
   flex-direction: column;
-  overflow:   hidden;
+  min-height:     100svh;
 }
 
-/* Faint concentric-ring cave-depth effect */
-.hero::before {
+@media (min-width: 900px) {
+  .split {
+    flex-direction: row;
+    align-items:    flex-start;   /* lets the panel be sticky while feed scrolls */
+  }
+}
+
+/* ── Left panel (sticky cave wall) ──────────────────────────────────────────── */
+.panel {
+  position:   relative;
+  overflow:   hidden;
+  background: radial-gradient(ellipse 100% 70% at 35% 30%, #1a1008 0%, var(--color-cave) 72%);
+  padding:    4rem 2rem 3rem;
+}
+
+.panel::before {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 45%, transparent 55%, rgba(0,0,0,0.4) 100%);
+  background: radial-gradient(ellipse 60% 55% at 40% 40%, transparent 55%, rgba(0,0,0,0.45) 100%);
   pointer-events: none;
 }
 
-.hero-inner {
-  position:       relative;
-  z-index:        2;
-  flex:           1;
-  display:        flex;
-  align-items:    center;
-  gap:            4rem;
-  max-width:      1100px;
-  width:          100%;
-  margin:         0 auto;
-  padding:        6rem 2rem 4rem;
+@media (min-width: 900px) {
+  .panel {
+    position:     sticky;
+    top:          0;
+    width:        44%;
+    height:       100svh;
+    display:      flex;
+    align-items:  center;
+    padding:      3rem clamp(2rem, 4vw, 4.5rem);
+    border-right: 1px solid var(--color-rock);
+  }
 }
 
-/* Cave painting figure */
-.cave-art {
-  flex-shrink: 0;
-  width:       clamp(90px, 12vw, 160px);
-  opacity:     0.85;
-  filter:      drop-shadow(0 0 20px rgba(249,115,22,0.4));
-  animation:   cave-breathe 6s ease-in-out infinite;
+.panel-inner {
+  position:  relative;
+  z-index:   2;
+  width:     100%;
+  max-width: 440px;
+  margin:    0 auto;
+}
+
+.mascot {
+  display:       block;
+  width:         clamp(110px, 22vw, 210px);
+  height:        auto;
+  margin-bottom: 1.5rem;
+  filter:        drop-shadow(0 0 30px rgba(249,115,22,0.35));
+  animation:     cave-breathe 6s ease-in-out infinite;
 }
 
 @keyframes cave-breathe {
-  0%, 100% { filter: drop-shadow(0 0 20px rgba(249,115,22,0.4)); opacity: 0.85; }
-  50%      { filter: drop-shadow(0 0 35px rgba(249,115,22,0.65)); opacity: 1; }
-}
-
-.hero-text {
-  flex: 1;
+  0%, 100% { filter: drop-shadow(0 0 26px rgba(249,115,22,0.35)); }
+  50%      { filter: drop-shadow(0 0 42px rgba(249,115,22,0.6)); }
 }
 
 .hero-eyebrow {
-  font-family: var(--font-mono);
-  font-size:   0.75rem;
-  font-weight: 500;
-  color:       var(--color-fire);
+  font-family:    var(--font-mono);
+  font-size:      0.75rem;
+  font-weight:    500;
+  color:          var(--color-fire);
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  margin-bottom: 0.75rem;
-  opacity: 0.8;
+  margin-bottom:  0.6rem;
+  opacity:        0.8;
 }
 
 .hero-name {
   font-family:   var(--font-display);
-  font-size:     clamp(4.5rem, 13vw, 9rem);
+  font-size:     clamp(3.5rem, 7vw, 6rem);
   line-height:   0.88;
   color:         var(--color-ash);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   animation:     ember-flicker 5s ease-in-out infinite;
 }
 
 @keyframes ember-flicker {
   0%,  100% { text-shadow: 0 0 60px rgba(249,115,22,0.22); }
-  20%        { text-shadow: 0 0 90px rgba(249,115,22,0.40), 0 0 30px rgba(234,88,12,0.2); }
-  45%        { text-shadow: 0 0 40px rgba(249,115,22,0.15); }
-  70%        { text-shadow: 0 0 100px rgba(249,115,22,0.35), 0 0 25px rgba(217,119,6,0.25); }
+  20%       { text-shadow: 0 0 90px rgba(249,115,22,0.40), 0 0 30px rgba(234,88,12,0.2); }
+  45%       { text-shadow: 0 0 40px rgba(249,115,22,0.15); }
+  70%       { text-shadow: 0 0 100px rgba(249,115,22,0.35), 0 0 25px rgba(217,119,6,0.25); }
 }
 
 .hero-tagline {
   font-family:   var(--font-mono);
-  font-size:     clamp(0.8rem, 1.5vw, 1rem);
+  font-size:     clamp(0.8rem, 1.2vw, 0.95rem);
   color:         var(--color-smoke);
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   font-style:    italic;
 }
 
-/* Social nav */
+/* Social nav — bare icons (no boxes) */
 .hero-links {
-  display:   flex;
-  flex-wrap: wrap;
-  gap:       0.75rem;
+  display:     flex;
+  flex-wrap:   wrap;
+  align-items: center;
+  gap:         1.4rem;
+  margin-top:  3.5rem;
 }
 
 .social-link {
-  display:        inline-flex;
-  align-items:    center;
-  gap:            0.5rem;
-  padding:        0.5rem 1rem;
-  border:         1px solid var(--color-char);
-  color:          var(--color-bone);
-  font-family:    var(--font-mono);
-  font-size:      0.8rem;
-  font-weight:    500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition:     border-color 0.2s, color 0.2s, box-shadow 0.2s;
-  background:     rgba(255,255,255,0.02);
+  display:    inline-flex;
+  color:      var(--color-smoke);
+  transition: color 0.2s, transform 0.2s;
 }
 
-.social-link svg {
-  width:  14px;
-  height: 14px;
-  fill:   currentColor;
-}
+.social-link svg { width: 20px; height: 20px; fill: currentColor; }
 
 .social-link:hover {
-  border-color: var(--color-fire);
-  color:        var(--color-fire);
-  box-shadow:   0 0 12px rgba(249,115,22,0.2);
+  color:     var(--color-fire);
+  transform: translateY(-2px);
 }
 
-/* ── Rock edge dividers ─────────────────────────────────────────────────────── */
-.rock-edge {
-  position: absolute;
-  bottom: -1px;
-  left:   0;
-  right:  0;
-  height: 48px;
+/* ── Scroll-spy section nav ─────────────────────────────────────────────────── */
+.spy { display: none; }
+
+@media (min-width: 900px) {
+  .spy { display: block; margin-top: 2.75rem; }
 }
 
-.rock-edge svg {
-  width:  100%;
-  height: 100%;
+.spy ol { list-style: none; margin: 0; padding: 0; }
+.spy li { display: flex; flex-direction: column; }
+
+.spy-link {
+  display:        flex;
+  align-items:    center;
+  gap:            0.85rem;
+  padding:        0.3rem 0;
+  color:          var(--color-smoke);
+  font-family:    var(--font-mono);
+  font-size:      0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition:     color 0.2s;
+}
+
+.spy-link:hover { color: var(--color-bone); }
+
+.spy-dot {
+  width:         8px;
+  height:        8px;
+  border-radius: 50%;
+  background:    var(--color-char);
+  flex-shrink:   0;
+  transition:    width 0.25s, height 0.25s, background 0.25s, box-shadow 0.25s;
+}
+
+.spy-line {
+  width:       1px;
+  height:      18px;
+  margin-left: 3.5px;
+  background:  var(--color-rock);
+  transition:  background 0.25s;
+}
+
+/* States driven by JS (data-* on the link) */
+.spy-link[data-passed="true"]  .spy-dot { background: var(--color-ember); }
+.spy-link[data-passed="true"] + .spy-line { background: var(--color-ember); }
+
+.spy-link[data-active="true"] { color: var(--color-fire); }
+.spy-link[data-active="true"] .spy-dot {
+  width:      12px;
+  height:     12px;
+  background: var(--color-fire);
+  box-shadow: 0 0 10px rgba(249,115,22,0.6);
+}
+
+/* ── Feed (right, scrolling) ────────────────────────────────────────────────── */
+.feed {
+  width:   100%;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+@media (min-width: 900px) {
+  .feed {
+    width:   56%;
+    padding: clamp(3rem, 6vh, 6rem) clamp(2rem, 4vw, 4rem) 5rem;
+  }
 }
 
 /* ── Sections ───────────────────────────────────────────────────────────────── */
-.section {
-  position:  relative;
-  padding:   5rem 0 6rem;
-  background: var(--color-cave);
-}
-
-.section-alt {
-  background: var(--color-pitch);
-}
-
-.section-inner {
-  max-width: 1100px;
-  margin:    0 auto;
-  padding:   0 2rem;
-}
+.section { padding-bottom: 3.5rem; }
 
 .section-header {
-  display:       flex;
-  align-items:   baseline;
-  gap:           1rem;
-  margin-bottom: 2.5rem;
-  border-bottom: 1px solid var(--color-rock);
+  display:        flex;
+  align-items:    center;
+  gap:            0.85rem;
+  margin-bottom:  2rem;
+  border-bottom:  1px solid var(--color-rock);
   padding-bottom: 1rem;
 }
 
 .section-rune {
-  font-size: 1.5rem;
-  line-height: 1;
+  display:     inline-flex;
+  align-items: center;
+  color:       var(--color-fire);
 }
+.section-rune svg { width: 1.4rem; height: 1.4rem; }
 
 .section-title {
   font-family:    var(--font-display);
-  font-size:      clamp(2rem, 5vw, 3rem);
-  color:          var(--color-fire);
+  font-size:      clamp(1.8rem, 4vw, 2.6rem);
+  color:          var(--color-ash);
   letter-spacing: 0.06em;
   line-height:    1;
 }
 
 .section-sub {
-  font-family: var(--font-mono);
-  font-size:   0.7rem;
-  color:       var(--color-char);
+  font-family:    var(--font-mono);
+  font-size:      0.7rem;
+  color:          var(--color-char);
   letter-spacing: 0.1em;
-  margin-left: auto;
+  margin-left:    auto;
 }
 
 /* ── Cards grid ─────────────────────────────────────────────────────────────── */
 .cards-grid {
   display:               grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap:                   1.25rem;
-  margin-bottom:         2rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap:                   1.1rem;
+  margin-bottom:         1.75rem;
 }
 
 .cards-grid--video {
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 /* ── Card ───────────────────────────────────────────────────────────────────── */
 .card {
-  display:        block;
-  background:     var(--color-stone);
-  border:         1px solid var(--color-rock);
-  color:          var(--color-ash);
+  display:         block;
+  background:      var(--color-stone);
+  border:          1px solid var(--color-rock);
+  color:           var(--color-ash);
   text-decoration: none;
-  transition:     border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-  position:       relative;
-  overflow:       hidden;
+  transition:      border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  position:        relative;
+  overflow:        hidden;
 }
 
-/* Subtle top-left corner notch — like a chipped stone tablet */
+/* Chipped stone-tablet corner notch */
 .card::before {
   content:  '';
   position: absolute;
-  top:    0;
-  left:   0;
-  width:  0;
-  height: 0;
+  top: 0; left: 0;
+  width: 0; height: 0;
   border-style: solid;
   border-width: 12px 12px 0 0;
   border-color: var(--color-cave) transparent transparent transparent;
   z-index: 1;
-  transition: border-color 0.25s;
 }
-
-.section-alt .card::before { border-color: var(--color-pitch) transparent transparent transparent; }
 
 .card:hover {
   border-color: var(--color-fire);
@@ -297,53 +362,44 @@ a {
   transform:    translateY(-3px);
 }
 
-.card:hover::before {
-  border-color: var(--color-cave) transparent transparent transparent;
-}
-
-.card-inner {
-  padding: 1.25rem;
-}
+.card-inner { padding: 1.25rem; }
 
 .card-cover {
-  width:      100%;
-  height:     140px;
-  object-fit: cover;
-  display:    block;
+  width:         100%;
+  height:        140px;
+  object-fit:    cover;
+  display:       block;
   border-bottom: 1px solid var(--color-rock);
-  filter:     brightness(0.9) saturate(0.85);
-  transition: filter 0.25s;
+  filter:        brightness(0.9) saturate(0.85);
+  transition:    filter 0.25s;
 }
-
-.card:hover .card-cover {
-  filter: brightness(1) saturate(1);
-}
+.card:hover .card-cover { filter: brightness(1) saturate(1); }
 
 .card-header {
-  display:     flex;
-  align-items: flex-start;
-  gap:         0.5rem;
+  display:       flex;
+  align-items:   flex-start;
+  gap:           0.5rem;
   margin-bottom: 0.5rem;
 }
 
 .card-title {
-  font-family:  var(--font-mono);
-  font-weight:  700;
-  font-size:    0.9rem;
-  color:        var(--color-ash);
-  line-height:  1.3;
-  flex:         1;
-  word-break:   break-word;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size:   0.9rem;
+  color:       var(--color-ash);
+  line-height: 1.3;
+  flex:        1;
+  word-break:  break-word;
 }
 
 .badge {
-  font-family:    var(--font-mono);
-  font-size:      0.65rem;
-  color:          var(--color-gold);
-  border:         1px solid rgba(217,119,6,0.3);
-  padding:        0.15rem 0.4rem;
-  white-space:    nowrap;
-  flex-shrink:    0;
+  font-family: var(--font-mono);
+  font-size:   0.65rem;
+  color:       var(--color-gold);
+  border:      1px solid rgba(217,119,6,0.3);
+  padding:     0.15rem 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .card-desc {
@@ -383,9 +439,9 @@ a {
 }
 
 .card-tags {
-  display:  flex;
-  flex-wrap: wrap;
-  gap:      0.3rem;
+  display:    flex;
+  flex-wrap:  wrap;
+  gap:        0.3rem;
   margin-top: 0.5rem;
 }
 
@@ -396,10 +452,7 @@ a {
 }
 
 /* Video card */
-.card-video .video-thumb-wrap {
-  position: relative;
-  overflow: hidden;
-}
+.card-video .video-thumb-wrap { position: relative; overflow: hidden; }
 
 .card-video .video-thumb {
   width:      100%;
@@ -409,39 +462,32 @@ a {
   filter:     brightness(0.85);
   transition: filter 0.25s, transform 0.25s;
 }
-
-.card-video:hover .video-thumb {
-  filter:    brightness(1);
-  transform: scale(1.03);
-}
+.card-video:hover .video-thumb { filter: brightness(1); transform: scale(1.03); }
 
 .play-btn {
-  position:  absolute;
-  top:       50%;
-  left:      50%;
-  transform: translate(-50%, -50%);
-  width:     44px;
-  height:    44px;
-  background: rgba(249,115,22,0.85);
-  display:   flex;
-  align-items: center;
+  position:        absolute;
+  top:             50%;
+  left:            50%;
+  transform:       translate(-50%, -50%);
+  width:           44px;
+  height:          44px;
+  background:      rgba(249,115,22,0.85);
+  display:         flex;
+  align-items:     center;
   justify-content: center;
-  font-size: 14px;
-  color:     #fff;
-  transition: background 0.2s, transform 0.2s;
-  clip-path: polygon(10% 0%, 90% 50%, 10% 100%);
-  padding-left: 4px;
+  font-size:       14px;
+  color:           #fff;
+  transition:      background 0.2s, transform 0.2s;
+  clip-path:       polygon(10% 0%, 90% 50%, 10% 100%);
+  padding-left:    4px;
 }
-
 .card-video:hover .play-btn {
   background: var(--color-fire);
   transform:  translate(-50%, -50%) scale(1.1);
 }
 
 /* ── Skeleton cards ─────────────────────────────────────────────────────────── */
-.skeleton-card {
-  padding: 1.25rem;
-}
+.skeleton-card { padding: 1.25rem; }
 
 .sk {
   background: linear-gradient(
@@ -470,7 +516,9 @@ a {
 
 /* ── See all link ───────────────────────────────────────────────────────────── */
 .see-all {
-  display:        inline-block;
+  display:        inline-flex;
+  align-items:    center;
+  gap:            0.45rem;
   font-family:    var(--font-mono);
   font-size:      0.75rem;
   font-weight:    700;
@@ -480,11 +528,9 @@ a {
   padding-bottom: 2px;
   transition:     border-color 0.2s, color 0.2s;
 }
-
-.see-all:hover {
-  color:         var(--color-ember);
-  border-color:  var(--color-ember);
-}
+.see-all svg { width: 1rem; height: 1rem; transition: transform 0.2s; }
+.see-all:hover { color: var(--color-ember); border-color: var(--color-ember); }
+.see-all:hover svg { transform: translateX(3px); }
 
 /* ── Error state ────────────────────────────────────────────────────────────── */
 .error-msg {
@@ -497,28 +543,18 @@ a {
 
 /* ── Footer ─────────────────────────────────────────────────────────────────── */
 .site-footer {
-  position:   relative;
-  background: var(--color-pitch);
-  border-top: 1px solid var(--color-rock);
-  padding:    3rem 2rem;
-  text-align: center;
-  overflow:   hidden;
-}
-
-.footer-inner {
-  position:  relative;
-  z-index:   2;
-  max-width: 600px;
-  margin:    0 auto;
+  margin-top:  2rem;
+  padding-top: 2.5rem;
+  border-top:  1px solid var(--color-rock);
 }
 
 .footer-name {
   font-family:    var(--font-display);
-  font-size:      2rem;
+  font-size:      1.75rem;
   color:          var(--color-fire);
   letter-spacing: 0.1em;
   opacity:        0.5;
-  margin-bottom:  0.5rem;
+  margin-bottom:  0.4rem;
 }
 
 .footer-sub a {
@@ -527,43 +563,18 @@ a {
   font-family: var(--font-mono);
   transition:  color 0.2s;
 }
-
-.footer-sub a:hover {
-  color: var(--color-fire);
-}
+.footer-sub a:hover { color: var(--color-fire); }
 
 .footer-copy {
-  font-size:   0.7rem;
-  color:       var(--color-char);
-  font-family: var(--font-mono);
-  margin-top:  0.75rem;
+  font-size:      0.7rem;
+  color:          var(--color-char);
+  font-family:    var(--font-mono);
+  margin-top:     0.6rem;
   letter-spacing: 0.05em;
 }
 
-/* ── Responsive ─────────────────────────────────────────────────────────────── */
-@media (max-width: 700px) {
-  .hero-inner {
-    flex-direction: column;
-    align-items:    flex-start;
-    gap:            2rem;
-    padding-top:    4rem;
-    padding-bottom: 3rem;
-  }
-
-  .cave-art {
-    width: 70px;
-  }
-
-  .hero-name {
-    font-size: clamp(3.5rem, 22vw, 6rem);
-  }
-
-  .section-sub {
-    display: none;
-  }
-
-  .cards-grid,
-  .cards-grid--video {
-    grid-template-columns: 1fr;
-  }
+/* ── Motion preference ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .mascot, .hero-name { animation: none; }
+  html { scroll-behavior: auto; }
 }
