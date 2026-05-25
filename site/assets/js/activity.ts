@@ -90,7 +90,7 @@ function renderGithub(repos: GithubRepo[]): void {
       <div class="card-inner">
         <div class="card-header">
           <span class="card-title">${esc(r.name)}</span>
-          ${r.stars > 0 ? `<span class="badge">★ ${r.stars}</span>` : ''}
+          ${r.stars > 0 ? `<span class="badge"><span class="badge-glyph">★</span>${r.stars}</span>` : ''}
         </div>
         ${r.description ? `<p class="card-desc">${esc(r.description)}</p>` : ''}
         <div class="card-footer">
@@ -118,7 +118,7 @@ function renderDevto(posts: DevtoPost[]): void {
       <div class="card-inner">
         <div class="card-header">
           <span class="card-title">${esc(p.title)}</span>
-          ${p.reactions > 0 ? `<span class="badge">♥ ${p.reactions}</span>` : ''}
+          ${p.reactions > 0 ? `<span class="badge"><span class="badge-glyph">♥</span>${p.reactions}</span>` : ''}
         </div>
         <div class="card-footer">
           <span class="card-meta">${p.reading_time_minutes} min read</span>
@@ -141,7 +141,7 @@ function renderYoutube(videos: YoutubeVideo[]): void {
     <a href="${esc(v.url)}" target="_blank" rel="noopener" class="card card-video">
       <div class="video-thumb-wrap">
         <img src="${esc(v.thumbnail)}" alt="${esc(v.title)}" class="video-thumb" loading="lazy">
-        <div class="play-btn" aria-hidden="true">▶</div>
+        <div class="play-btn" aria-hidden="true"></div>
       </div>
       <div class="card-inner">
         <div class="card-header">
@@ -296,7 +296,161 @@ function initScrollSpy(): void {
   update();
 }
 
+// ── Late cave night: WebGL fire (bottom) + starfield (top) ─────────────────────
+// Raw WebGL, no library. One fullscreen triangle, one fragment shader (FBM flame
+// + procedural stars), one rAF loop. Desktop only, skipped under reduced motion,
+// and paused when the tab is hidden — keeps it cheap.
+const FIRE_FS = `
+precision mediump float;
+uniform float time;
+uniform vec2  res;
+
+float rand(vec2 n){ return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453); }
+float noise(vec2 p){
+  vec2 ip = floor(p); vec2 u = fract(p); u = u*u*(3.0-2.0*u);
+  float r = mix(mix(rand(ip),            rand(ip+vec2(1.0,0.0)), u.x),
+                mix(rand(ip+vec2(0.0,1.0)), rand(ip+vec2(1.0,1.0)), u.x), u.y);
+  return r*r;
+}
+float fbm(vec2 x){
+  float v = 0.0; float a = 0.5; vec2 shift = vec2(100.0);
+  mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
+  for (int i = 0; i < 5; i++){ v += a*noise(x); x = rot*x*2.0 + shift; a *= 0.5; }
+  return v;
+}
+
+float hash11(float n){ return fract(sin(n) * 43758.5453); }
+
+// One shooting star per ~4s window: random launch time (so spacing feels ~3-5s),
+// random start x and direction, a bright head with a fading tail.
+vec3 shootingStar(vec2 uv, float t){
+  float period = 4.0;
+  float idx = floor(t / period);
+  float lt  = fract(t / period);
+  float r1 = hash11(idx * 1.73);
+  float r2 = hash11(idx * 3.31 + 2.0);
+  float r3 = hash11(idx * 5.91 + 7.0);
+  float startT = 0.20 + r1 * 0.25;          // launch moment within the window
+  float prog = (lt - startT) / 0.16;        // flight ~0.64s
+  if (prog < 0.0 || prog > 1.0) return vec3(0.0);
+  vec2 start = vec2(0.05 + r2 * 0.55, 0.92);
+  vec2 dir   = normalize(vec2(0.45 + r3 * 0.5, -0.55 - r2 * 0.25));
+  vec2 pos   = start + dir * prog * 0.8;
+  vec2 d = uv - pos;
+  float along = dot(d, -dir);
+  float perp  = length(d + dir * along);
+  float head  = smoothstep(0.010, 0.0, length(d));
+  float tail  = smoothstep(0.0035, 0.0, perp) * smoothstep(0.14, 0.0, along) * step(0.0, along);
+  float bright = max(head, tail * 0.75);
+  bright *= smoothstep(0.0, 0.12, prog) * smoothstep(1.0, 0.65, prog);  // fade in/out
+  bright *= smoothstep(0.22, 0.55, uv.y);                              // upper sky only
+  return vec3(1.0, 0.96, 0.85) * bright;
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / res;   // 0..1, y up
+  vec3 col = vec3(0.0);
+  float alpha = 0.0;
+
+  // --- fire, anchored to the bottom, scrolling upward ---
+  vec2 p = vec2(uv.x * 3.0, uv.y * 4.0);
+  float n = fbm(p + vec2(0.0, -time * 0.6) + fbm(p));
+  float flame = pow(smoothstep(0.5, 0.0, uv.y) * n, 1.25);
+  vec3 ember = vec3(0.40, 0.09, 0.0);
+  vec3 fire  = vec3(0.95, 0.35, 0.05);
+  vec3 gold  = vec3(1.00, 0.72, 0.28);
+  vec3 fcol = mix(ember, fire, smoothstep(0.0, 0.40, flame));
+  fcol = mix(fcol, gold, smoothstep(0.45, 0.95, flame));
+  float glow = smoothstep(0.85, 0.0, uv.y) * 0.18;   // soft bloom-ish lift
+  col += fcol * flame + fire * glow;
+  alpha = clamp(flame + glow * 0.7, 0.0, 1.0);
+
+  // --- stars: each twinkles on its own phase + speed, dimming but never vanishing ---
+  vec2 gp = uv * vec2(55.0, 80.0);
+  vec2 gi = floor(gp);
+  float rr = rand(gi);
+  if (rr > 0.955) {
+    vec2 gf = fract(gp) - 0.5;
+    float ph  = rand(gi + 13.1) * 6.2831;          // independent phase (full circle)
+    float spd = 1.0 + rand(gi + 4.7) * 1.6;        // varied twinkle speed
+    float tw  = 0.62 + 0.38 * sin(time * spd + ph); // floor 0.24 — shimmers, never off
+    float s = smoothstep(0.13, 0.0, length(gf)) * tw * smoothstep(0.22, 0.70, uv.y);
+    col += vec3(1.0, 0.95, 0.85) * s;
+    alpha = max(alpha, s);
+  }
+
+  // --- shooting star ---
+  vec3 ss = shootingStar(uv, time);
+  col += ss;
+  alpha = max(alpha, max(ss.r, max(ss.g, ss.b)));
+
+  gl_FragColor = vec4(col, alpha);
+}`;
+
+function initFire(): void {
+  const canvas = document.querySelector('.fire-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  if (!window.matchMedia('(min-width: 900px)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true });
+  if (!gl) return;
+
+  const compile = (type: number, src: string): WebGLShader | null => {
+    const s = gl.createShader(type);
+    if (!s) return null;
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  };
+
+  const vs = compile(gl.VERTEX_SHADER, 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}');
+  const fs = compile(gl.FRAGMENT_SHADER, FIRE_FS);
+  const prog = gl.createProgram();
+  if (!vs || !fs || !prog) return;
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const uTime = gl.getUniformLocation(prog, 'time');
+  const uRes  = gl.getUniformLocation(prog, 'res');
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0, 0, 0);
+
+  const t0 = performance.now();
+  let raf = 0;
+  const frame = (): void => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.round(canvas.clientWidth * dpr);
+    const h = Math.round(canvas.clientHeight * dpr);
+    if (w && h && (canvas.width !== w || canvas.height !== h)) {
+      canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
+    }
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(uTime, (performance.now() - t0) * 0.001);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    raf = requestAnimationFrame(frame);
+  };
+  const start = (): void => { if (!raf) raf = requestAnimationFrame(frame); };
+  const stop  = (): void => { if (raf) { cancelAnimationFrame(raf); raf = 0; } };
+
+  document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+  start();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadActivity();
   initScrollSpy();
+  initFire();
 });

@@ -4,577 +4,816 @@
    Replaces the render-blocking Google Fonts request. font-display: swap paints
    in the fallback first, then swaps in (avoids invisible-text / FOIT). */
 @font-face {
-  font-family: 'Bebas Neue';
-  font-style:  normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/bebas-neue-latin-400-normal.woff2') format('woff2');
+    font-family: "Bebas Neue";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/bebas-neue-latin-400-normal.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'IBM Plex Mono';
-  font-style:  normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'IBM Plex Mono';
-  font-style:  normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'IBM Plex Mono';
-  font-style:  normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/ibm-plex-mono-latin-700-normal.woff2') format('woff2');
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-latin-700-normal.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'IBM Plex Mono';
-  font-style:  italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/ibm-plex-mono-latin-400-italic.woff2') format('woff2');
+    font-family: "IBM Plex Mono";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-latin-400-italic.woff2") format("woff2");
 }
 
 /* ── Design tokens ──────────────────────────────────────────────────────────── */
 @theme {
-  --color-cave:    #0a0908;
-  --color-stone:   #1a1614;
-  --color-slate:   #252018;
-  --color-rock:    #332e28;
-  --color-fire:    #f97316;
-  --color-ember:   #ea580c;
-  --color-gold:    #d97706;
-  --color-ash:     #fafaf8;
-  --color-bone:    #d6d3d1;
-  --color-smoke:   #a8a29e;
-  --color-char:    #44403c;
-  --color-pitch:   #111110;
+    --color-cave: #0a0908;
+    --color-stone: #1a1614;
+    --color-slate: #252018;
+    --color-rock: #332e28;
+    --color-fire: #f97316;
+    --color-ember: #ea580c;
+    --color-gold: #d97706;
+    --color-ash: #fafaf8;
+    --color-bone: #d6d3d1;
+    --color-smoke: #a8a29e;
+    --color-char: #44403c;
+    --color-pitch: #111110;
 
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-mono:    'IBM Plex Mono', monospace;
+    --font-display: "Bebas Neue", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+}
+
+/* ── Tunables ───────────────────────────────────────────────────────────────── */
+:root {
+    /* Overall intensity of the brown rock texture on the content side (one knob
+       for the whole overlay: mottle + strata + grit). 0 = off, higher = more
+       brown/visible. Dial it to taste. */
+    --rock-texture: 0.19;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  background-color: var(--color-cave);
-  color:            var(--color-ash);
-  font-family:      var(--font-mono);
-  font-size:        0.95rem;
-  line-height:      1.6;
-  overflow-x:       hidden;
-  -webkit-font-smoothing: antialiased;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-a { color: inherit; text-decoration: none; }
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--color-cave);
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
 
 /* ── Skip link (keyboard a11y) ──────────────────────────────────────────────── */
 .skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 100;
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
 }
 .skip-link:focus {
-  left: 1rem;
-  top:  1rem;
-  padding: 0.6rem 1rem;
-  background: var(--color-pitch);
-  color: var(--color-fire);
-  border: 1px solid var(--color-fire);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
+    left: 1rem;
+    top: 1rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-pitch);
+    color: var(--color-fire);
+    border: 1px solid var(--color-fire);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
 }
 
 /* ── Split shell ────────────────────────────────────────────────────────────── */
 .split {
-  display:        flex;
-  flex-direction: column;
-  min-height:     100svh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
 }
 
 @media (min-width: 900px) {
-  .split {
-    flex-direction: row;
-    align-items:    flex-start;   /* lets the panel be sticky while feed scrolls */
-  }
+    .split {
+        flex-direction: row;
+        align-items: flex-start; /* lets the panel be sticky while feed scrolls */
+    }
 }
 
 /* ── Left panel (sticky cave wall) ──────────────────────────────────────────── */
 .panel {
-  position:   relative;
-  overflow:   hidden;
-  background: radial-gradient(ellipse 100% 70% at 35% 30%, #1a1008 0%, var(--color-cave) 72%);
-  padding:    4rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(
+        ellipse 100% 70% at 35% 30%,
+        #1a1008 0%,
+        var(--color-cave) 72%
+    );
+    padding: 4rem 2rem 3rem;
 }
 
 .panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 60% 55% at 40% 40%, transparent 55%, rgba(0,0,0,0.45) 100%);
-  pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse 60% 55% at 40% 40%,
+        transparent 55%,
+        rgba(0, 0, 0, 0.45) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* WebGL fire + starfield canvas (desktop only) — fills the panel behind content */
+.fire-canvas {
+    display: none;
 }
 
 @media (min-width: 900px) {
-  .panel {
-    position:     sticky;
-    top:          0;
-    width:        44%;
-    height:       100svh;
-    display:      flex;
-    align-items:  center;
-    padding:      3rem clamp(2rem, 4vw, 4.5rem);
-    border-right: 1px solid var(--color-rock);
-  }
+    .fire-canvas {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+}
+
+@media (min-width: 900px) {
+    .panel {
+        position: sticky;
+        top: 0;
+        width: 44%;
+        height: 100svh;
+        display: flex;
+        align-items: center;
+        padding: 3rem clamp(2rem, 4vw, 4.5rem);
+        border-right: 1px solid var(--color-rock);
+    }
 }
 
 .panel-inner {
-  position:  relative;
-  z-index:   2;
-  width:     100%;
-  max-width: 440px;
-  margin:    0 auto;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
 }
 
 .mascot {
-  display:       block;
-  width:         clamp(110px, 22vw, 210px);
-  height:        auto;
-  margin-bottom: 1.5rem;
-  filter:        drop-shadow(0 0 30px rgba(249,115,22,0.35));
-  animation:     cave-breathe 6s ease-in-out infinite;
-}
-
-@keyframes cave-breathe {
-  0%, 100% { filter: drop-shadow(0 0 26px rgba(249,115,22,0.35)); }
-  50%      { filter: drop-shadow(0 0 42px rgba(249,115,22,0.6)); }
+    display: block;
+    width: clamp(110px, 22vw, 210px);
+    height: auto;
+    margin-bottom: 1.5rem;
+    /* plain dark shadow to ground him — no glow/aura */
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55));
 }
 
 .hero-eyebrow {
-  font-family:    var(--font-mono);
-  font-size:      0.75rem;
-  font-weight:    500;
-  color:          var(--color-fire);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  margin-bottom:  0.6rem;
-  opacity:        0.8;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-fire);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    opacity: 0.8;
 }
 
 .hero-name {
-  font-family:   var(--font-display);
-  font-size:     clamp(3.5rem, 7vw, 6rem);
-  line-height:   0.88;
-  color:         var(--color-ash);
-  margin-bottom: 1.25rem;
-  animation:     ember-flicker 5s ease-in-out infinite;
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: 0.88;
+    color: var(--color-ash);
+    margin-bottom: 1.25rem;
+    animation: ember-flicker 5s ease-in-out infinite;
 }
 
 @keyframes ember-flicker {
-  0%,  100% { text-shadow: 0 0 60px rgba(249,115,22,0.22); }
-  20%       { text-shadow: 0 0 90px rgba(249,115,22,0.40), 0 0 30px rgba(234,88,12,0.2); }
-  45%       { text-shadow: 0 0 40px rgba(249,115,22,0.15); }
-  70%       { text-shadow: 0 0 100px rgba(249,115,22,0.35), 0 0 25px rgba(217,119,6,0.25); }
+    0%,
+    100% {
+        text-shadow: 0 0 60px rgba(249, 115, 22, 0.22);
+    }
+    20% {
+        text-shadow:
+            0 0 90px rgba(249, 115, 22, 0.4),
+            0 0 30px rgba(234, 88, 12, 0.2);
+    }
+    45% {
+        text-shadow: 0 0 40px rgba(249, 115, 22, 0.15);
+    }
+    70% {
+        text-shadow:
+            0 0 100px rgba(249, 115, 22, 0.35),
+            0 0 25px rgba(217, 119, 6, 0.25);
+    }
 }
 
 .hero-tagline {
-  font-family:   var(--font-mono);
-  font-size:     clamp(0.8rem, 1.2vw, 0.95rem);
-  color:         var(--color-smoke);
-  margin-bottom: 2rem;
-  font-style:    italic;
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    color: var(--color-smoke);
+    margin-bottom: 2rem;
+    font-style: italic;
 }
 
 /* Social nav — bare icons (no boxes) */
 .hero-links {
-  display:     flex;
-  flex-wrap:   wrap;
-  align-items: center;
-  gap:         1.4rem;
-  margin-top:  3.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.65rem;
+    margin-top: 3.5rem;
 }
 
 .social-link {
-  display:    inline-flex;
-  color:      var(--color-smoke);
-  transition: color 0.2s, transform 0.2s;
+    display: inline-flex;
+    color: var(--color-smoke);
+    transition:
+        color 0.2s,
+        transform 0.2s;
 }
 
-.social-link svg { width: 20px; height: 20px; fill: currentColor; }
+.social-link svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+}
 
 .social-link:hover {
-  color:     var(--color-fire);
-  transform: translateY(-2px);
+    color: var(--color-fire);
+    transform: translateY(-2px);
 }
 
 /* ── Scroll-spy section nav ─────────────────────────────────────────────────── */
-.spy { display: none; }
+.spy {
+    display: none;
+}
 
 @media (min-width: 900px) {
-  .spy { display: block; margin-top: 2.75rem; }
+    .spy {
+        display: block;
+        margin-top: 2.75rem;
+    }
 }
 
-.spy ol { list-style: none; margin: 0; padding: 0; }
-.spy li { display: flex; flex-direction: column; }
+.spy ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.spy li {
+    display: flex;
+    flex-direction: column;
+}
 
 .spy-link {
-  display:        flex;
-  align-items:    center;
-  gap:            0.85rem;
-  padding:        0.3rem 0;
-  color:          var(--color-smoke);
-  font-family:    var(--font-mono);
-  font-size:      0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  transition:     color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.3rem 0;
+    color: var(--color-smoke);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: color 0.2s;
 }
 
-.spy-link:hover { color: var(--color-bone); }
+.spy-link:hover {
+    color: var(--color-bone);
+}
 
 .spy-dot {
-  width:         8px;
-  height:        8px;
-  border-radius: 50%;
-  background:    var(--color-char);
-  flex-shrink:   0;
-  transition:    width 0.25s, height 0.25s, background 0.25s, box-shadow 0.25s;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-char);
+    flex-shrink: 0;
+    transition:
+        width 0.25s,
+        height 0.25s,
+        background 0.25s,
+        box-shadow 0.25s;
 }
 
 .spy-line {
-  width:       1px;
-  height:      18px;
-  margin-left: 3.5px;
-  background:  var(--color-rock);
-  transition:  background 0.25s;
+    width: 1px;
+    height: 18px;
+    margin-left: 3.5px;
+    background: var(--color-rock);
+    transition: background 0.25s;
 }
 
 /* States driven by JS (data-* on the link) */
-.spy-link[data-passed="true"]  .spy-dot { background: var(--color-ember); }
-.spy-link[data-passed="true"] + .spy-line { background: var(--color-ember); }
+.spy-link[data-passed="true"] .spy-dot {
+    background: var(--color-ember);
+}
+.spy-link[data-passed="true"] + .spy-line {
+    background: var(--color-ember);
+}
 
-.spy-link[data-active="true"] { color: var(--color-fire); }
+.spy-link[data-active="true"] {
+    color: var(--color-fire);
+}
 .spy-link[data-active="true"] .spy-dot {
-  width:      12px;
-  height:     12px;
-  background: var(--color-fire);
-  box-shadow: 0 0 10px rgba(249,115,22,0.6);
+    width: 12px;
+    height: 12px;
+    background: var(--color-fire);
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
 }
 
 /* ── Feed (right, scrolling) ────────────────────────────────────────────────── */
+/* The brown rock texture lives entirely on .feed::before (see that rule). .feed
+   itself is just the cave-black base + the full-viewport min-height. */
 .feed {
-  width:   100%;
-  padding: 2.5rem 1.5rem 4rem;
+    position: relative;
+    width: 100%;
+    padding: 2.5rem 1.5rem 4rem;
+    background-color: var(--color-cave);
+}
+
+/* All rock texture on one overlay so --rock-texture dims the whole thing as a
+   single transparency. Three brown layers — RGB is a fixed brown, alpha is the
+   shaped noise, so each fades from cave-black up to brown (no gray):
+   top→bottom = fine grit, wavy sedimentary strata (full-cover tile), mottle. */
+.feed::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--rock-texture, 0.32);
+    background-image:
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><filter id='g' x='0%' y='0%' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.549 0 0 0 0 0.376 0 0 0 0 0.216 0.33 0.33 0.33 0 0'/><feComponentTransfer><feFuncA type='linear' slope='2.3' intercept='-1.0'/></feComponentTransfer></filter><rect width='600' height='600' filter='url(%23g)'/></svg>"),
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600' preserveAspectRatio='none'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='0.0035 0.04' numOctaves='3'/><feColorMatrix type='matrix' values='0 0 0 0 0.471 0 0 0 0 0.322 0 0 0 0 0.18 0.33 0.33 0.33 0 0'/><feComponentTransfer><feFuncA type='linear' slope='1.5' intercept='-0.45'/></feComponentTransfer></filter><rect width='600' height='600' filter='url(%23s)'/></svg>"),
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><filter id='m' x='0%' y='0%' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.013333' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.373 0 0 0 0 0.247 0 0 0 0 0.137 0.33 0.33 0.33 0 0'/><feComponentTransfer><feFuncA type='linear' slope='1.1' intercept='-0.15'/></feComponentTransfer></filter><rect width='600' height='600' filter='url(%23m)'/></svg>");
+    background-size:
+        600px 600px,
+        100% 100%,
+        600px 600px;
+    background-repeat: repeat, no-repeat, repeat;
+}
+
+/* keep the feed's content above the rock overlay */
+.feed > * {
+    position: relative;
+    z-index: 1;
 }
 
 @media (min-width: 900px) {
-  .feed {
-    width:   56%;
-    padding: clamp(3rem, 6vh, 6rem) clamp(2rem, 4vw, 4rem) 5rem;
-  }
+    .feed {
+        width: 56%;
+        /* fill at least the viewport so the rock texture reaches the bottom even
+       when content is short (the sticky panel holds the page to full height) */
+        min-height: 100svh;
+        padding: clamp(3rem, 6vh, 6rem) clamp(2rem, 4vw, 4rem) 5rem;
+    }
 }
 
 /* ── Sections ───────────────────────────────────────────────────────────────── */
-.section { padding-bottom: 3.5rem; }
+.section {
+    padding-bottom: 3.5rem;
+}
 
 .section-header {
-  display:        flex;
-  align-items:    center;
-  gap:            0.85rem;
-  margin-bottom:  2rem;
-  border-bottom:  1px solid var(--color-rock);
-  padding-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--color-rock);
+    padding-bottom: 1rem;
 }
 
 .section-rune {
-  display:     inline-flex;
-  align-items: center;
-  color:       var(--color-fire);
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-fire);
 }
-.section-rune svg { width: 1.4rem; height: 1.4rem; }
+.section-rune svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
 
 .section-title {
-  font-family:    var(--font-display);
-  font-size:      clamp(1.8rem, 4vw, 2.6rem);
-  color:          var(--color-ash);
-  letter-spacing: 0.06em;
-  line-height:    1;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--color-ash);
+    letter-spacing: 0.06em;
+    line-height: 1;
 }
 
 .section-sub {
-  font-family:    var(--font-mono);
-  font-size:      0.7rem;
-  color:          var(--color-char);
-  letter-spacing: 0.1em;
-  margin-left:    auto;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-smoke);
+    letter-spacing: 0.1em;
+    margin-left: auto;
 }
 
 /* ── Cards grid ─────────────────────────────────────────────────────────────── */
 .cards-grid {
-  display:               grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap:                   1.1rem;
-  margin-bottom:         1.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.1rem;
+    margin-bottom: 1.75rem;
 }
 
 .cards-grid--video {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 /* ── Card ───────────────────────────────────────────────────────────────────── */
 .card {
-  display:         block;
-  background:      var(--color-stone);
-  border:          1px solid var(--color-rock);
-  color:           var(--color-ash);
-  text-decoration: none;
-  transition:      border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-  position:        relative;
-  overflow:        hidden;
-}
-
-/* Chipped stone-tablet corner notch */
-.card::before {
-  content:  '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 12px 12px 0 0;
-  border-color: var(--color-cave) transparent transparent transparent;
-  z-index: 1;
+    display: block;
+    background: var(--color-stone);
+    border: 1px solid var(--color-rock);
+    color: var(--color-ash);
+    text-decoration: none;
+    transition:
+        border-color 0.25s,
+        box-shadow 0.25s,
+        transform 0.25s;
+    position: relative;
+    overflow: hidden;
 }
 
 .card:hover {
-  border-color: var(--color-fire);
-  box-shadow:   0 0 0 1px rgba(249,115,22,0.15),
-                0 4px 24px rgba(249,115,22,0.1),
-                0 0 40px rgba(249,115,22,0.05);
-  transform:    translateY(-3px);
+    border-color: var(--color-fire);
+    box-shadow:
+        0 0 0 1px rgba(249, 115, 22, 0.15),
+        0 4px 24px rgba(249, 115, 22, 0.1),
+        0 0 40px rgba(249, 115, 22, 0.05);
+    transform: translateY(-3px);
 }
 
-.card-inner { padding: 1.25rem; }
+.card-inner {
+    padding: 1.25rem;
+}
 
 .card-cover {
-  width:         100%;
-  height:        140px;
-  object-fit:    cover;
-  display:       block;
-  border-bottom: 1px solid var(--color-rock);
-  filter:        brightness(0.9) saturate(0.85);
-  transition:    filter 0.25s;
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--color-rock);
+    filter: brightness(0.9) saturate(0.85);
+    transition: filter 0.25s;
 }
-.card:hover .card-cover { filter: brightness(1) saturate(1); }
+.card:hover .card-cover {
+    filter: brightness(1) saturate(1);
+}
 
 .card-header {
-  display:       flex;
-  align-items:   flex-start;
-  gap:           0.5rem;
-  margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .card-title {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size:   0.9rem;
-  color:       var(--color-ash);
-  line-height: 1.3;
-  flex:        1;
-  word-break:  break-word;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-ash);
+    line-height: 1.3;
+    flex: 1;
+    word-break: break-word;
 }
 
 .badge {
-  font-family: var(--font-mono);
-  font-size:   0.65rem;
-  color:       var(--color-gold);
-  border:      1px solid rgba(217,119,6,0.3);
-  padding:     0.15rem 0.4rem;
-  white-space: nowrap;
-  flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28em;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-gold);
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+
+.badge-glyph {
+    font-size: 1.45em; /* star/heart noticeably larger than the figure */
+    line-height: 1;
 }
 
 .card-desc {
-  font-size:     0.8rem;
-  color:         var(--color-smoke);
-  margin-bottom: 0.75rem;
-  line-height:   1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    font-size: 0.8rem;
+    color: var(--color-smoke);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .card-footer {
-  display:     flex;
-  align-items: center;
-  gap:         0.5rem;
-  margin-top:  0.75rem;
-  padding-top: 0.75rem;
-  border-top:  1px solid var(--color-rock);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-rock);
 }
 
 .card-meta {
-  font-size:      0.7rem;
-  color:          var(--color-char);
-  letter-spacing: 0.05em;
-  font-style:     italic;
+    font-size: 0.7rem;
+    color: var(--color-smoke);
+    letter-spacing: 0.05em;
+    font-style: italic;
 }
 
-.ml-auto { margin-left: auto; }
+.ml-auto {
+    margin-left: auto;
+}
 
 .lang-dot {
-  width:         8px;
-  height:        8px;
-  border-radius: 50%;
-  flex-shrink:   0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .card-tags {
-  display:    flex;
-  flex-wrap:  wrap;
-  gap:        0.3rem;
-  margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
 }
 
 .tag {
-  font-size:   0.65rem;
-  color:       rgba(249,115,22,0.7);
-  font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: rgba(249, 115, 22, 0.7);
+    font-family: var(--font-mono);
 }
 
 /* Video card */
-.card-video .video-thumb-wrap { position: relative; overflow: hidden; }
+.card-video .video-thumb-wrap {
+    position: relative;
+    overflow: hidden;
+}
 
 .card-video .video-thumb {
-  width:      100%;
-  height:     155px;
-  object-fit: cover;
-  display:    block;
-  filter:     brightness(0.85);
-  transition: filter 0.25s, transform 0.25s;
+    width: 100%;
+    height: 155px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.85);
+    transition:
+        filter 0.25s,
+        transform 0.25s;
 }
-.card-video:hover .video-thumb { filter: brightness(1); transform: scale(1.03); }
+.card-video:hover .video-thumb {
+    filter: brightness(1);
+    transform: scale(1.03);
+}
 
 .play-btn {
-  position:        absolute;
-  top:             50%;
-  left:            50%;
-  transform:       translate(-50%, -50%);
-  width:           44px;
-  height:          44px;
-  background:      rgba(249,115,22,0.85);
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  font-size:       14px;
-  color:           #fff;
-  transition:      background 0.2s, transform 0.2s;
-  clip-path:       polygon(10% 0%, 90% 50%, 10% 100%);
-  padding-left:    4px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 38px;
+    height: 44px;
+    background: var(--color-fire);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+    transition:
+        transform 0.2s,
+        filter 0.2s;
 }
 .card-video:hover .play-btn {
-  background: var(--color-fire);
-  transform:  translate(-50%, -50%) scale(1.1);
+    transform: translate(-50%, -50%) scale(1.12);
+    filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.65));
 }
 
 /* ── Skeleton cards ─────────────────────────────────────────────────────────── */
-.skeleton-card { padding: 1.25rem; }
+.skeleton-card {
+    padding: 1.25rem;
+}
 
 .sk {
-  background: linear-gradient(
-    90deg,
-    var(--color-rock) 25%,
-    var(--color-slate) 50%,
-    var(--color-rock) 75%
-  );
-  background-size: 200% 100%;
-  animation:       shimmer 1.8s ease-in-out infinite;
-  border-radius:   1px;
-  margin-bottom:   0.6rem;
+    background: linear-gradient(
+        90deg,
+        var(--color-rock) 25%,
+        var(--color-slate) 50%,
+        var(--color-rock) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: 1px;
+    margin-bottom: 0.6rem;
 }
 
 @keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
-.sk-cover        { height: 140px; margin: -1.25rem -1.25rem 1rem; }
-.sk-video-thumb  { height: 155px; margin: -1.25rem -1.25rem 1rem; }
-.sk-title        { height: 16px; width: 70%; }
-.sk-text         { height: 12px; width: 100%; }
-.sk-short        { width: 45%; }
-.sk-footer       { height: 10px; width: 40%; margin-top: 0.75rem; }
+.sk-cover {
+    height: 140px;
+    margin: -1.25rem -1.25rem 1rem;
+}
+.sk-video-thumb {
+    height: 155px;
+    margin: -1.25rem -1.25rem 1rem;
+}
+.sk-title {
+    height: 16px;
+    width: 70%;
+}
+.sk-text {
+    height: 12px;
+    width: 100%;
+}
+.sk-short {
+    width: 45%;
+}
+.sk-footer {
+    height: 10px;
+    width: 40%;
+    margin-top: 0.75rem;
+}
 
 /* ── See all link ───────────────────────────────────────────────────────────── */
 .see-all {
-  display:        inline-flex;
-  align-items:    center;
-  gap:            0.45rem;
-  font-family:    var(--font-mono);
-  font-size:      0.75rem;
-  font-weight:    700;
-  color:          var(--color-fire);
-  letter-spacing: 0.15em;
-  border-bottom:  1px solid rgba(249,115,22,0.3);
-  padding-bottom: 2px;
-  transition:     border-color 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-fire);
+    letter-spacing: 0.15em;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.3);
+    padding-bottom: 2px;
+    transition:
+        border-color 0.2s,
+        color 0.2s;
 }
-.see-all svg { width: 1rem; height: 1rem; transition: transform 0.2s; }
-.see-all:hover { color: var(--color-ember); border-color: var(--color-ember); }
-.see-all:hover svg { transform: translateX(3px); }
+.see-all svg {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s;
+}
+.see-all:hover {
+    color: var(--color-ember);
+    border-color: var(--color-ember);
+}
+.see-all:hover svg {
+    transform: translateX(3px);
+}
 
 /* ── Error state ────────────────────────────────────────────────────────────── */
 .error-msg {
-  font-family: var(--font-mono);
-  font-size:   0.8rem;
-  color:       var(--color-char);
-  font-style:  italic;
-  padding:     2rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-smoke);
+    font-style: italic;
+    padding: 2rem 0;
 }
 
 /* ── Footer ─────────────────────────────────────────────────────────────────── */
 .site-footer {
-  margin-top:  2rem;
-  padding-top: 2.5rem;
-  border-top:  1px solid var(--color-rock);
+    margin-top: 2rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--color-rock);
 }
 
 .footer-name {
-  font-family:    var(--font-display);
-  font-size:      1.75rem;
-  color:          var(--color-fire);
-  letter-spacing: 0.1em;
-  opacity:        0.5;
-  margin-bottom:  0.4rem;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    color: var(--color-fire);
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    margin-bottom: 0.4rem;
 }
 
 .footer-sub a {
-  font-size:   0.8rem;
-  color:       var(--color-smoke);
-  font-family: var(--font-mono);
-  transition:  color 0.2s;
+    font-size: 0.8rem;
+    color: var(--color-smoke);
+    font-family: var(--font-mono);
+    transition: color 0.2s;
 }
-.footer-sub a:hover { color: var(--color-fire); }
+.footer-sub a:hover {
+    color: var(--color-fire);
+}
 
 .footer-copy {
-  font-size:      0.7rem;
-  color:          var(--color-char);
-  font-family:    var(--font-mono);
-  margin-top:     0.6rem;
-  letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    color: var(--color-smoke);
+    font-family: var(--font-mono);
+    margin-top: 0.6rem;
+    letter-spacing: 0.05em;
+}
+
+/* ── Small / narrow viewports: cap cards per section ────────────────────────────
+   On phones and half-width windows, show at most 3 cards; the "see all" links
+   cover the rest. Keeps the stacked feed from becoming an endless scroll. */
+@media (max-width: 768px) {
+    .cards-grid > .card:nth-child(n + 4) {
+        display: none;
+    }
+}
+
+/* ── First-show "drop & clunk" (full-screen split only) ─────────────────────────
+   Real cards fall in from above and land with a small squash on impact. Skeleton
+   loaders are excluded, so only the actual content animates — once, when it lands.
+   fill-mode: backwards holds the hidden start state during the stagger delay
+   (no flash) but releases afterward so the card's hover-lift still works. */
+@media (min-width: 900px) {
+    .cards-grid > .card:not(.skeleton-card) {
+        animation: card-drop 0.55s backwards;
+    }
+    .cards-grid > .card:not(.skeleton-card):nth-child(2) {
+        animation-delay: 0.06s;
+    }
+    .cards-grid > .card:not(.skeleton-card):nth-child(3) {
+        animation-delay: 0.12s;
+    }
+    .cards-grid > .card:not(.skeleton-card):nth-child(4) {
+        animation-delay: 0.18s;
+    }
+    .cards-grid > .card:not(.skeleton-card):nth-child(5) {
+        animation-delay: 0.24s;
+    }
+    .cards-grid > .card:not(.skeleton-card):nth-child(6) {
+        animation-delay: 0.3s;
+    }
+}
+
+@keyframes card-drop {
+    /* heavy fall: accelerate hard under "gravity", no easing out into the floor */
+    0% {
+        opacity: 0;
+        transform: translateY(-60px) rotate(0deg);
+        animation-timing-function: cubic-bezier(0.7, 0, 0.9, 0.2);
+    }
+    20% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    } /* dead stop — it lands like a rock */
+    61% {
+        transform: translateY(0) rotate(-1.2deg);
+    } /* snap: sharp jolt on impact */
+    73% {
+        transform: translateY(0) rotate(0.7deg);
+    }
+    85% {
+        transform: translateY(0) rotate(-0.3deg);
+    }
+    100% {
+        transform: translateY(0) rotate(0deg);
+    } /* settled, no bounce */
 }
 
 /* ── Motion preference ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .mascot, .hero-name { animation: none; }
-  html { scroll-behavior: auto; }
+    .hero-name,
+    .cards-grid > .card {
+        animation: none;
+    }
+    .fire-canvas {
+        display: none;
+    }
+    html {
+        scroll-behavior: auto;
+    }
 }
