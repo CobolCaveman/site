@@ -1,4 +1,4 @@
-# cobolcaveman.com
+# CobolCaveman.com
 
 Personal site — Hugo static frontend + Cloudflare Worker API aggregating
 GitHub, dev.to, and YouTube activity.
